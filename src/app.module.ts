@@ -11,6 +11,7 @@ import { User } from "./users/users.model";
         ConfigModule.forRoot({
             envFilePath: `.${process.env.NODE_ENV}.env`
         }),
+        // Данные для входа в базу данных postgreSQL
         SequelizeModule.forRoot(  {
           dialect: 'postgres',
           host: process.env.POSTGRES_HOST, 
