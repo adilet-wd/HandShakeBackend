@@ -28,7 +28,7 @@ export class UsersController {
 
     @ApiOperation({summary: "Получение пользователя по Primal Key"})
     @ApiResponse({status: 200, type: User})
-    @Get(':id')
+    @Get('/:id')
     get(@Param('id') id: number){
         return this.usersService.getOneUser(id);    
     }
@@ -36,7 +36,7 @@ export class UsersController {
 
     @ApiOperation({summary: "Удаление пользователя по Primal Key"})
     @ApiResponse({status: 410, type: User})
-    @Delete(':id')
+    @Delete('/:id')
     delete(@Param('id') id: number){
         return this.usersService.deleteUser(id);
     }
