@@ -16,15 +16,19 @@ export class RolesService {
     }
 
     async getAllRoles(){
-        const users = await this.roleRepository.findAll();
-        return users;
+        const roles = await this.roleRepository.findAll();
+        return roles;
     }
 
     async getRoleByValue(value: string){
         const role = await this.roleRepository.findOne({where: {value}});
-        if (!role) {
-            throw new NotFoundException("role not found");
-        }
+        return role;
+
+    }
+
+    async deleteRole( value: string) {
+        const role = await this.roleRepository.findOne({where: {value}});
+        await role.destroy();
         return role;
     }
 }
