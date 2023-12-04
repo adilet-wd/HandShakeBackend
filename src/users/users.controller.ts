@@ -11,6 +11,8 @@ export class UsersController {
     
     constructor(private usersService: UsersService){}
 
+
+    // Создание пользователя с по userDto
     @ApiOperation({summary: "Создание пользователя"})
     @ApiResponse({status: 200, type: User})
     @Post()
@@ -18,7 +20,7 @@ export class UsersController {
         return this.usersService.createUser(userDto);
     }
 
-
+    // Получение всех пользователей.Возвращает массива с пользователями
     @ApiOperation({summary: "Получение всех пользователей"})
     @ApiResponse({status: 200, type: [User]})
     @Get()
@@ -26,6 +28,7 @@ export class UsersController {
         return this.usersService.getAllUsers();
     }
 
+    // Возвращает пользователя по его PK
     @ApiOperation({summary: "Получение пользователя по Primal Key"})
     @ApiResponse({status: 200, type: User})
     @Get('/:id')
@@ -33,7 +36,7 @@ export class UsersController {
         return this.usersService.getOneUser(id);    
     }
 
-
+    // Удаляет пользователя по его PK
     @ApiOperation({summary: "Удаление пользователя по Primal Key"})
     @ApiResponse({status: 410, type: User})
     @Delete('/:id')

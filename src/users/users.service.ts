@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/sequelize';
 import { User } from './users.model';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { RolesService } from 'src/role/roles.service';
-import { response } from 'express';
 
 
 @Injectable()
@@ -13,8 +12,10 @@ export class UsersService {
 
     }
 
+    // Создание пользователя по модели 
     async createUser(dto: CreateUserDTO){
         const user = await this.userRepository.create(dto);
+        // Получаем роль со значением USER и присваивает пользователю эту роль
         const role = await this.roleService.getRoleByValue("USER")
         await user.$set('roles', [role.id]);
         return user;
