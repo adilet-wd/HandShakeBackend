@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDTO } from 'src/users/dto/create-user.dto';
@@ -14,7 +14,13 @@ export class AuthService {
 
     }
     async registration(userDto: CreateUserDTO){
+        const candidate = await this.userService.getUserByEmail(userDto.email);
         
+        // Проверка наличия такого user в бдшке
+        if (candidate){
+            throw new HttpException("Пользователь с таким email существует", HttpStatus.BAD_REQUEST)
+        }
+
     }
 
 }
