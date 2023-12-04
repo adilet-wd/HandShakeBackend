@@ -26,8 +26,14 @@ export class UsersService {
         return users;
     }
 
-    async getOneUser(id: number) {
+    async getOneUser(id: number){
         const user = await this.userRepository.findByPk(id);
+        return user;
+    }
+
+    // Получение пользователя по его почте(уникальная почта)
+    async getUserByEmail(email: string) {
+        const user = await this.userRepository.findOne({where:{email}, include: {all: true}});
         return user;
     }
     
@@ -36,4 +42,6 @@ export class UsersService {
         await user.destroy();
         return user;
     }
+
+
 }
