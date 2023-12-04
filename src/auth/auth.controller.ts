@@ -19,4 +19,5 @@ export class AuthController {
     registration(@Body() userDto: CreateUserDTO){
         this.authService.registration(userDto);
     }
+    // Проверка
 }
