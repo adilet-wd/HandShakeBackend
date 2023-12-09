@@ -17,7 +17,10 @@ export class UsersService {
         const user = await this.userRepository.create(dto);
         // Получаем роль со значением USER и присваивает пользователю эту роль
         const role = await this.roleService.getRoleByValue("USER")
-        await user.$set('roles', [role.id]);
+        // Добавляем роль пользователя в бд
+        await user.$set('roles', [role.id])
+        // Добавляем роль пользователю
+        user.roles = [role];
         return user;
     }
     

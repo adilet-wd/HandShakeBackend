@@ -1,8 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDTO } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
@@ -11,9 +12,12 @@ export class AuthService {
         , private jwtService: JwtService){}
 
     async login(userDto: CreateUserDTO){
-
+        const user = await this.validateUser(userDto);
+        return this.generateToken(user);
     }
+
     async registration(userDto: CreateUserDTO){
+        
         const candidate = await this.userService.getUserByEmail(userDto.email);
         
         // Проверка наличия такого user в бдшке
@@ -21,6 +25,29 @@ export class AuthService {
             throw new HttpException("Пользователь с таким email существует", HttpStatus.BAD_REQUEST)
         }
 
+        const hashPassword = await bcrypt.hash(userDto.password, 5);
+        const user = await this.userService.createUser({...userDto, password: hashPassword})
+        return this.generateToken(user); 
+
+    }
+
+    private async generateToken(user){
+        const payload = {email: user.email, id: user.id, roles: user.roles}
+        return {
+            token: this.jwtService.sign(payload)
+        }
+
+    }
+
+
+    private async validateUser(userDto: CreateUserDTO) {
+        const user = await this.userService.getUserByEmail(userDto.email); 
+        const passwordEquals = await bcrypt.compare(userDto.password, user.password);
+        if (user && passwordEquals) {
+            return user;
+        } else {
+            throw new UnauthorizedException({message: "Некорректный email или пароль"});
+        }
     }
 
 }
