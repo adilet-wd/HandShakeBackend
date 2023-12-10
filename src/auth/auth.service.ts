@@ -4,6 +4,8 @@ import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDTO } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcryptjs';
+import { LoginUserDto } from './dto/login-auth.dto';
+import { error } from 'console';
 
 @Injectable()
 export class AuthService {
@@ -11,7 +13,7 @@ export class AuthService {
     constructor(private userService: UsersService
         , private jwtService: JwtService){}
 
-    async login(userDto: CreateUserDTO){
+    async login(userDto: LoginUserDto){
         const user = await this.validateUser(userDto);
         return {
             accessToken: await this.generateAccessToken(user),
@@ -58,17 +60,21 @@ export class AuthService {
                     accessToken: await this.generateAccessToken(user),
                 }
             } else {
-                throw new HttpException({status: HttpStatus.BAD_REQUEST, error: 'Invalid refresh token',}, HttpStatus.BAD_REQUEST);
+                throw new HttpException(
+                    {status: HttpStatus.BAD_REQUEST, message: 'Invalid refresh token',}
+                    , HttpStatus.BAD_REQUEST);
             }
 
         } catch(error) {
-            throw new HttpException({status: HttpStatus.NO_CONTENT, error: 'Invalid refresh token',}, HttpStatus.NO_CONTENT);
+            throw new HttpException(
+                    {status: HttpStatus.BAD_REQUEST, message: 'Invalid refresh token',}
+                    , HttpStatus.BAD_REQUEST);
         }
       }
 
     private async generateAccessToken(user) {
         const payload = {email: user.email, id: user.id, roles: user.roles}
-        return this.jwtService.sign(payload, { expiresIn: '10m' }); 
+        return this.jwtService.sign(payload, { expiresIn: '30s' }); 
     }
 
     private async generateRefreshToken(user) {
@@ -77,7 +83,7 @@ export class AuthService {
     }
 
 
-    private async validateUser(userDto: CreateUserDTO) {
+    private async validateUser(userDto: LoginUserDto) {
         const user = await this.userService.getUserByEmail(userDto.email); 
         const passwordEquals = await bcrypt.compare(userDto.password, user.password);
         if (user && passwordEquals) {

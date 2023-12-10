@@ -30,6 +30,8 @@ export class UsersController {
     // Получение всех пользователей. Возвращает массив пользователей
     @ApiOperation({summary: "Получение всех пользователей"})
     @ApiResponse({status: 200, type: [User]})
+    @Roles("ADMIN")
+    @UseGuards(RolesGuard)
     @UseGuards(JwtAuthGuard)
     @Get()
     getAll(){
@@ -47,6 +49,7 @@ export class UsersController {
         return this.usersService.getUserByEmail(dto.email);    
     }
 
+    
     // Удаляет пользователя по его почте
     @ApiOperation({summary: "Удаление пользователя по почте"})
     @ApiResponse({status: 410, type: User})
@@ -61,9 +64,6 @@ export class UsersController {
     // Выдача роли пользователю
     @ApiOperation({summary: "Выдача роли пользователю"})
     @ApiResponse({status: 200})
-    @Roles("ADMIN")
-    @UseGuards(RolesGuard)
-    @UseGuards(JwtAuthGuard)
     @Post('/role')
     addRole(@Body() dto: AddRoleDto){
         return this.usersService.addRoleToUser(dto);    
