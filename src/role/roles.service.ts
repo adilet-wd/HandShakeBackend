@@ -20,6 +20,7 @@ export class RolesService {
         return roles;
     }
 
+    // Получение роли по значению роли, т.е получение роли из бд по значению к примеру "ADMIN"
     async getRoleByValue(value: string){
         const role = await this.roleRepository.findOne({where: {value}});
         return role;
