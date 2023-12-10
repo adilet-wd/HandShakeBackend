@@ -30,8 +30,6 @@ export class UsersController {
     // Получение всех пользователей. Возвращает массив пользователей
     @ApiOperation({summary: "Получение всех пользователей"})
     @ApiResponse({status: 200, type: [User]})
-    @Roles("ADMIN")
-    @UseGuards(RolesGuard)
     @UseGuards(JwtAuthGuard)
     @Get()
     getAll(){

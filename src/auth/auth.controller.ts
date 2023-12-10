@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Headers, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateUserDTO } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
@@ -20,4 +20,9 @@ export class AuthController {
         return this.authService.registration(userDto);
     }
     // Проверка
+
+    @Post('/refresh-accesstoken')
+    refreshAccesToken(@Headers("authorization") authHeader: string){
+        return this.authService.refreshAccessToken(authHeader);
+    }
 }
