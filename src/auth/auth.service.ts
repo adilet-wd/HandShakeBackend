@@ -13,7 +13,10 @@ export class AuthService {
 
     async login(userDto: CreateUserDTO){
         const user = await this.validateUser(userDto);
-        return this.generateToken(user);
+        return {
+            accessToken: await this.generateAccessToken(user),
+            refreshToken: await this.generateRefreshToken(user)
+        }
     }
 
     async registration(userDto: CreateUserDTO){
@@ -27,16 +30,50 @@ export class AuthService {
 
         const hashPassword = await bcrypt.hash(userDto.password, 5);
         const user = await this.userService.createUser({...userDto, password: hashPassword})
-        return this.generateToken(user); 
+    
+        return {
+            accessToken: await this.generateAccessToken(user),
+            refreshToken: await this.generateRefreshToken(user)
+        }
 
     }
 
-    private async generateToken(user){
-        const payload = {email: user.email, id: user.id, roles: user.roles}
-        return {
-            token: this.jwtService.sign(payload)
-        }
 
+    async refreshAccessToken(authHeader: string) {
+    
+        try {
+            const bearer = authHeader.split(' ')[0];
+            const refreshToken = authHeader.split(' ')[1];
+
+            if (bearer !== "Bearer" || !refreshToken) {
+                throw new UnauthorizedException("Invalid token")   
+            }
+
+            const decodedToken = this.jwtService.decode(refreshToken);
+            
+            // Проверьте, имеет ли RefreshToken необходимые поля
+            if (decodedToken.email || decodedToken.id) {
+                const user = await this.userService.getUserByEmail(decodedToken.email);
+                return {
+                    accessToken: await this.generateAccessToken(user),
+                }
+            } else {
+                throw new HttpException({status: HttpStatus.BAD_REQUEST, error: 'Invalid refresh token',}, HttpStatus.BAD_REQUEST);
+            }
+
+        } catch(error) {
+            throw new HttpException({status: HttpStatus.NO_CONTENT, error: 'Invalid refresh token',}, HttpStatus.NO_CONTENT);
+        }
+      }
+
+    private async generateAccessToken(user) {
+        const payload = {email: user.email, id: user.id, roles: user.roles}
+        return this.jwtService.sign(payload, { expiresIn: '10m' }); 
+    }
+
+    private async generateRefreshToken(user) {
+        const payload = {email: user.email, id: user.id}
+        return this.jwtService.sign(payload, { expiresIn: '7d' }); 
     }
 
 
