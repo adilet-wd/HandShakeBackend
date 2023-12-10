@@ -1,8 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './users.model';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { RolesService } from 'src/role/roles.service';
+import { AddRoleDto } from './dto/add-role.dto';
+import { BanUserDto } from './dto/ban-user.dto';
+import { GetUserDto } from './dto/get-user.dto';
 
 
 @Injectable()
@@ -29,20 +32,51 @@ export class UsersService {
         return users;
     }
 
-    async getOneUser(id: number){
-        const user = await this.userRepository.findByPk(id);
-        return user;
-    }
-
     // Получение пользователя по его почте(уникальная почта)
     async getUserByEmail(email: string) {
-        const user = await this.userRepository.findOne({where:{email}, include: {all: true}});
+        const user = await this.userRepository.findOne({where:{email: email}, include: {all: true}});
         return user;
     }
     
-    async deleteUser(id: number){
-        const user = await this.userRepository.findByPk(id);
+    async deleteUserByEmail(email: string){
+        const user = await this.userRepository.findOne({where:{email: email}, include: {all: true}});
         await user.destroy();
+        return user;
+    }
+
+    async addRoleToUser(dto: AddRoleDto){
+        const user = await this.userRepository.findByPk(dto.userId);
+        const role = await this.roleService.getRoleByValue(dto.value);
+
+        if (role && user) {
+            await user.$add('roles', role.id);
+            return dto;
+        } 
+
+        throw new HttpException('Пользователь или роль не найдены', HttpStatus.NOT_FOUND)
+
+    }
+
+    // async deleteRoleFromUser(dto: AddRoleDto){
+    //     const user = await this.userRepository.findByPk(dto.userId);
+    //     const role = await this.roleService.getRoleByValue(dto.value);
+
+    //     if (role && user) {
+    //         await user.$remove('roles', role.id);
+    //         return dto;
+    //     } 
+
+    //     throw new HttpException('Пользователь или роль не найдены', HttpStatus.NOT_FOUND)
+
+    // }
+    
+
+    // Блокировка пользователя
+    async banUser(dto: BanUserDto) {
+        const user = await this.userRepository.findByPk(dto.userId);
+        user.banned = true;
+        user.banReason = dto.banReason;
+        await user.save();
         return user;
     }
 
