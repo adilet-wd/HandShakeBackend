@@ -6,6 +6,7 @@ import { RolesService } from 'src/role/roles.service';
 import { AddRoleDto } from './dto/add-role.dto';
 import { BanUserDto } from './dto/ban-user.dto';
 import { GetUserDto } from './dto/get-user.dto';
+import { error } from 'console';
 
 
 @Injectable()
@@ -17,14 +18,25 @@ export class UsersService {
 
     // Создание пользователя по модели 
     async createUser(dto: CreateUserDTO){
-        const user = await this.userRepository.create(dto);
-        // Получаем роль со значением USER и присваивает пользователю эту роль
-        const role = await this.roleService.getRoleByValue("USER")
-        // Добавляем роль пользователя в бд
-        await user.$set('roles', [role.id])
-        // Добавляем роль пользователю
-        user.roles = [role];
-        return user;
+        try {
+            const { role, ...updatedDto } = dto;
+            const userRole = await this.roleService.getRoleByValue(dto.role);
+
+            if (userRole) {
+                const user = await this.userRepository.create(updatedDto);
+                // Добавляем роль пользователя в бд
+                await user.$set('roles', [userRole.id])
+                // Добавляем роль пользователю
+                user.roles = [userRole];
+                return user; 
+            } else {
+                throw new HttpException("Invalid data", HttpStatus.BAD_REQUEST);
+            }
+
+        } catch (error){
+            throw new HttpException("Invalid data", HttpStatus.BAD_REQUEST);
+        }
+        
     }
     
     async getAllUsers(){
@@ -39,9 +51,17 @@ export class UsersService {
     }
     
     async deleteUserByEmail(email: string){
-        const user = await this.userRepository.findOne({where:{email: email}, include: {all: true}});
-        await user.destroy();
-        return user;
+        try {
+
+            const user = await this.userRepository.findOne({where:{email: email}, include: {all: true}});
+            if (user) {
+                await user.destroy();
+                return user;
+            }
+            
+        } catch (error){
+            throw new HttpException("Invalid data", HttpStatus.BAD_REQUEST);
+        }
     }
 
     async addRoleToUser(dto: AddRoleDto){

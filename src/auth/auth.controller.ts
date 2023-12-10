@@ -2,6 +2,7 @@ import { Body, Controller, Headers, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateUserDTO } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
+import { LoginUserDto } from './dto/login-auth.dto';
 
 @ApiTags("Авторизация")
 @Controller('auth')
@@ -11,7 +12,7 @@ export class AuthController {
     constructor(private authService: AuthService){}
 
     @Post('/login')
-    login(@Body() userDto: CreateUserDTO){
+    login(@Body() userDto: LoginUserDto){
         return this.authService.login(userDto);
     }
 
@@ -21,7 +22,7 @@ export class AuthController {
     }
     // Проверка
 
-    @Post('/refresh-accesstoken')
+    @Post('/refresh-accessToken')
     refreshAccesToken(@Headers("authorization") authHeader: string){
         return this.authService.refreshAccessToken(authHeader);
     }

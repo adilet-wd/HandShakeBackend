@@ -18,7 +18,7 @@ import { AuthModule } from './auth/auth.module';
         ConfigModule.forRoot({
             envFilePath: `.${process.env.NODE_ENV}.env`
         }),
-        // Данные для входа в базу данных postgreSQL
+        // Данные для вход в базу данных postgreSQL
         SequelizeModule.forRoot(  {
           dialect: 'postgres',
           host: process.env.POSTGRES_HOST, 
