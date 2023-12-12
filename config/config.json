@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "root",
+    "database": "handShake",
+    "host": "localhost",
+    "dialect": "postgres",
+    "autoLoadModels": true
+  },
+  "test":  {
+    "username": "postgres",
+    "password": "root",
+    "database": "handShake",
+    "host": "localhost",
+    "dialect": "postgres",
+    "autoLoadModels": true
+  },
+  "production":  {
+    "username": "postgres",
+    "password": "root",
+    "database": "handShake",
+    "host": "localhost",
+    "dialect": "postgres",
+    "autoLoadModels": true
+  }
+}
