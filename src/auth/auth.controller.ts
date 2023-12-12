@@ -1,8 +1,9 @@
-import { Body, Controller, Headers, Post } from '@nestjs/common';
+import { Body, Controller, Headers, Post, UsePipes } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateUserDTO } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-auth.dto';
+import { ValidationPipe } from 'src/pipes/validation.pipe';
 
 @ApiTags("Авторизация")
 @Controller('auth')
