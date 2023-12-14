@@ -1,7 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { BelongsToMany, Column, DataType, Model, Table } from "sequelize-typescript";
+import { BelongsToMany, Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
 import { Role } from "src/role/roles.model";
 import { UserRoles } from "src/role/user-roles.model";
+import { Vacancy } from "src/vacancies/vacancies.model";
 
 
 interface UserCreationAttrs {
@@ -71,7 +72,10 @@ export class User extends Model<User, UserCreationAttrs> {
         allowNull: true,
     })
     banReason: string;
-    
+
     @BelongsToMany( ()=> Role, ()=> UserRoles)
     roles: Role[]
+
+    @HasMany( () => Vacancy)
+    vacancies: Vacancy[]
 }

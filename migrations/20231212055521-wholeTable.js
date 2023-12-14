@@ -103,6 +103,40 @@ module.exports = {
         onDelete: 'CASCADE',
       },
     });
+
+    await queryInterface.createTable('vacancies', {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER,
+      },
+      content: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      workMode: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      userId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL',
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+      },
+    });
     /**
      * Add altering commands here.
      *
