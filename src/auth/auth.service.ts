@@ -10,10 +10,10 @@ import { error } from 'console';
 @Injectable()
 export class AuthService {
 
-    constructor(private userService: UsersService
-        , private jwtService: JwtService){}
+    constructor(private userService: UsersService, private jwtService: JwtService){}
 
     async login(userDto: LoginUserDto){
+        // Проверяем совпадает ли пароль и почта в бд
         const user = await this.validateUser(userDto);
         return {
             accessToken: await this.generateAccessToken(user),
@@ -22,22 +22,18 @@ export class AuthService {
     }
 
     async registration(userDto: CreateUserDTO){
-        
-        const candidate = await this.userService.getUserByEmail(userDto.email);
-        
         // Проверка наличия такого user в бдшке
+        const candidate = await this.userService.getUserByEmail(userDto.email);
         if (candidate){
             throw new HttpException("Пользователь с таким email существует", HttpStatus.BAD_REQUEST)
         }
-
+        // Хэширование паспорта и создание пользователя
         const hashPassword = await bcrypt.hash(userDto.password, 5);
         const user = await this.userService.createUser({...userDto, password: hashPassword})
-    
         return {
             accessToken: await this.generateAccessToken(user),
             refreshToken: await this.generateRefreshToken(user)
         }
-
     }
 
 
@@ -70,17 +66,18 @@ export class AuthService {
                     {status: HttpStatus.BAD_REQUEST, message: 'Invalid refresh token',}
                     , HttpStatus.BAD_REQUEST);
         }
-      }
-
+    }
+    
     private async generateAccessToken(user) {
-        const payload = {email: user.email, id: user.id, roles: user.roles}
+        const payload = {tokenType: "accessToken", email: user.email, id: user.id, roles: user.roles}
         return this.jwtService.sign(payload, { expiresIn: '30s' }); 
     }
 
     private async generateRefreshToken(user) {
-        const payload = {email: user.email, id: user.id}
+        const payload = {tokenType: "refreshToken", email: user.email, id: user.id}
         return this.jwtService.sign(payload, { expiresIn: '7d' }); 
     }
+
 
 
     private async validateUser(userDto: LoginUserDto) {

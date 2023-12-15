@@ -89,8 +89,6 @@ module.exports = {
           model: 'roles',
           key: 'id',
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
       },
       userId: {
         type: Sequelize.INTEGER,
@@ -99,8 +97,6 @@ module.exports = {
           model: 'users',
           key: 'id',
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
       },
     });
 
@@ -137,6 +133,80 @@ module.exports = {
         type: Sequelize.DATE,
       },
     });
+
+    await queryInterface.createTable('employees', {
+      id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        unique: true,
+      },
+      userId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users', 
+          key: 'id',
+        },
+      },
+      studyLocation: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      dateOfBirth: {
+        type: Sequelize.DATEONLY,
+        allowNull: true,
+      },
+      gender: {
+        type: Sequelize.ENUM("male", "female"),
+        allowNull: true,
+      },
+    });
+
+    await queryInterface.createTable('employers', {
+      id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        unique: true,
+      },
+      userId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'users', 
+          key: 'id',
+        },
+        allowNull: false,
+      },
+      companyName: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      location: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      companyDescription: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+    });
+
+
+    await queryInterface.bulkInsert('roles', [
+      {
+        value: 'ADMIN',
+        description: 'Администратор',
+      },
+      {
+        value: 'EMPLOYEE',
+        description: 'Работник',
+      },
+      {
+        value: 'EMPLOYER',
+        description: 'Работодатель',
+      },
+    ]);
     /**
      * Add altering commands here.
      *
