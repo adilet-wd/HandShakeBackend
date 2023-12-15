@@ -1,12 +1,13 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { User } from './users.model';
+import { User } from './entities/users.model';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { RolesService } from 'src/role/roles.service';
 import { AddRoleDto } from './dto/add-role.dto';
 import { BanUserDto } from './dto/ban-user.dto';
 import { GetUserDto } from './dto/get-user.dto';
 import { error } from 'console';
+import { Employee } from 'src/employee/entities/employee.model';
 
 
 @Injectable()
@@ -22,14 +23,28 @@ export class UsersService {
             const { role, ...updatedDto } = dto;
             const userRole = await this.roleService.getRoleByValue(dto.role);
 
-            if (userRole) {
+            if(userRole.value  === "EMPLOYEE") {
                 const user = await this.userRepository.create(updatedDto);
                 // Добавляем роль пользователя в бд
                 await user.$set('roles', [userRole.id])
                 // Добавляем роль пользователю
                 user.roles = [userRole];
-                return user; 
-            } else {
+                // Добалвяем связь пользователя с employee
+                await user.$create('employee', {userId: user.id})
+                return user;
+            } 
+            else if (userRole.value  === "EMPLOYER") {
+                const user = await this.userRepository.create(updatedDto);
+                // Добавляем роль пользователя в бд
+                await user.$set('roles', [userRole.id])
+                // Добавляем роль пользователю
+                user.roles = [userRole];
+                // Добалвяем связь пользователя с employer
+                await user.$create('employer', {userId: user.id})
+
+                return user;
+            }
+            else {
                 throw new HttpException("Invalid data", HttpStatus.BAD_REQUEST);
             }
 

@@ -1,7 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { BelongsToMany, Column, DataType, Model, Table } from "sequelize-typescript";
-import { Role } from "src/role/roles.model";
-import { UserRoles } from "src/role/user-roles.model";
+import { BelongsToMany, Column, DataType, HasMany, HasOne, Model, Table } from "sequelize-typescript";
+import { Employee } from "src/employee/entities/employee.model";
+import { Employer } from "src/employer/entities/employer.model";
+import { Role } from "src/role/entities/roles.model";
+import { UserRoles } from "src/role/entities/user-roles.model";
+import { Vacancy } from "src/vacancies/vacancies.model";
 
 
 interface UserCreationAttrs {
@@ -17,7 +20,7 @@ interface UserCreationAttrs {
 })
 export class User extends Model<User, UserCreationAttrs> {
 
-    @ApiProperty({example: "1", description: "Уникальный идентификатор, Primal Key"})
+    @ApiProperty({example: "1", description: "Уникальный идентификатор, Primary Key"})
     @Column({
         type: DataType.INTEGER,
         unique: true,
@@ -58,7 +61,7 @@ export class User extends Model<User, UserCreationAttrs> {
     })
     password: string;
 
-    @ApiProperty({example: "true", description: "Забанен пользователь или нет"})
+    @ApiProperty({example: "false", description: "Забанен пользователь или нет"})
     @Column({
         type: DataType.BOOLEAN,
         defaultValue: false,
@@ -71,7 +74,16 @@ export class User extends Model<User, UserCreationAttrs> {
         allowNull: true,
     })
     banReason: string;
-    
+
     @BelongsToMany( ()=> Role, ()=> UserRoles)
     roles: Role[]
+
+    @HasMany( () => Vacancy)
+    vacancies: Vacancy[]
+
+    @HasOne( ()=> Employee)
+    employee: Employee
+
+    @HasOne( ()=> Employer)
+    employer: Employer
 }

@@ -2,9 +2,9 @@ import { Module, forwardRef } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { User } from './users.model';
-import { Role } from 'src/role/roles.model';
-import { UserRoles } from 'src/role/user-roles.model';
+import { User } from './entities/users.model';
+import { Role } from 'src/role/entities/roles.model';
+import { UserRoles } from 'src/role/entities/user-roles.model';
 import { RolesModule } from 'src/role/roles.module';
 import { AuthModule } from 'src/auth/auth.module';
 

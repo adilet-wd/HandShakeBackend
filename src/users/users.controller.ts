@@ -1,65 +1,77 @@
-import { Body, Controller, Post, Get, Put, Delete, Param, UseGuards } from '@nestjs/common';
+import { Body, Headers, Controller, Post, Get, Put, Delete, Param, UseGuards, UsePipes } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { User } from './users.model';
+import { User } from './entities/users.model';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/auth/roles-auth.decarator';
-import { RolesGuard } from 'src/auth/roles.guard';
+import { RolesGuard } from 'src/auth/roles-auth.guard';
 import { AddRoleDto } from './dto/add-role.dto';
 import { BanUserDto } from './dto/ban-user.dto';
 import { GetUserDto } from './dto/get-user.dto';
+import { ValidationPipe } from 'src/pipes/validation.pipe';
+import { AuthService } from 'src/auth/auth.service';
 
 
 
 @ApiTags('Пользователи')
 @Controller('users')
 export class UsersController {
-    
-    constructor(private usersService: UsersService){}
-
+    constructor(private usersService: UsersService, private authService: AuthService){}
 
     // Создание пользователя
-    @ApiOperation({summary: "Создание пользователя"})
-    @ApiResponse({status: 200, type: User})
-    @Post()
-    create(@Body() userDto: CreateUserDTO){
-        return this.usersService.createUser(userDto);
-    }
+    // @ApiOperation({summary: "Создание пользователя"})
+    // @ApiResponse({status: 200, type: User})
+    // @Post()
+    // create(@Body() userDto: CreateUserDTO){
+    //     return this.authService.registration(userDto);
+    // }
 
     // Получение всех пользователей. Возвращает массив пользователей
     @ApiOperation({summary: "Получение всех пользователей"})
     @ApiResponse({status: 200, type: [User]})
-    @Roles("ADMIN")
-    @UseGuards(RolesGuard)
-    @UseGuards(JwtAuthGuard)
+    // @Roles("ADMIN")
+    // @UseGuards(RolesGuard)
+    // @UseGuards(JwtAuthGuard)
     @Get()
     getAll(){
         return this.usersService.getAllUsers();
     }
 
-    // Возвращает пользователя по его почте
+
+    // Возвращение пользователя по его почте
     @ApiOperation({summary: "Получение пользователя по почте"})
     @ApiResponse({status: 200, type: User})
-    @Roles("ADMIN")
-    @UseGuards(RolesGuard)
-    @UseGuards(JwtAuthGuard)
+    // @Roles("ADMIN")
+    // @UseGuards(RolesGuard)
+    // @UseGuards(JwtAuthGuard)
     @Get('/user')
     get(@Body() dto: GetUserDto){
         return this.usersService.getUserByEmail(dto.email);    
     }
 
-    
-    // Удаляет пользователя по его почте
-    @ApiOperation({summary: "Удаление пользователя по почте"})
-    @ApiResponse({status: 410, type: User})
-    @Roles("ADMIN")
-    @UseGuards(RolesGuard)
-    @UseGuards(JwtAuthGuard)
-    @Delete('/user')
-    delete(@Body() dto: GetUserDto){
-        return this.usersService.deleteUserByEmail(dto.email);
+    // Возвращение пользователя по его почте
+    @ApiOperation({summary: "Получение пользователя по его accesToken"})
+    @ApiResponse({status: 200, type: User})
+    // @Roles("ADMIN")
+    // @UseGuards(RolesGuard)
+    // @UseGuards(JwtAuthGuard)
+    @Get('/myProfile')
+    getMyProfile(@Headers("authorization") authHeader: string){
+        return true;
     }
+
+
+    // // Удаляет пользователя по его почте
+    // @ApiOperation({summary: "Удаление пользователя по почте"})
+    // @ApiResponse({status: 410, type: ""})
+    // // @Roles("ADMIN")
+    // // @UseGuards(RolesGuard)
+    // // @UseGuards(JwtAuthGuard)
+    // @Delete('/user')
+    // delete(@Body() dto: GetUserDto){
+    //     return this.usersService.deleteUserByEmail(dto.email);
+    // }
 
     // Выдача роли пользователю
     @ApiOperation({summary: "Выдача роли пользователю"})
