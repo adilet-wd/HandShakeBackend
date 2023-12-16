@@ -1,16 +1,19 @@
 import { Body, Headers, Controller, Post, Get, Put, Delete, Param, UseGuards, UsePipes } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDTO } from './dto/create-user.dto';
+import { UserCreateDTO } from './dto/user-create.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from './entities/users.model';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/auth/roles-auth.decarator';
 import { RolesGuard } from 'src/auth/roles-auth.guard';
-import { AddRoleDto } from './dto/add-role.dto';
-import { BanUserDto } from './dto/ban-user.dto';
-import { GetUserDto } from './dto/get-user.dto';
+import { RoleAddDto } from './dto/role-add.dto';
+import { UserBanDto } from './dto/user-ban.dto';
+import { UserGetDto } from './dto/user-get.dto';
 import { ValidationPipe } from 'src/pipes/validation.pipe';
 import { AuthService } from 'src/auth/auth.service';
+import { MyProfileUnauthorizedResponse } from './dto/myProfle-responses.dto';
+import { UnauthorizedResponse } from '../dto/unauthorized-response.dto';
+import { UnauthorizedApiResponse } from 'src/decorators/unauthorized.decorator';
 
 
 
@@ -19,15 +22,6 @@ import { AuthService } from 'src/auth/auth.service';
 export class UsersController {
     constructor(private usersService: UsersService, private authService: AuthService){}
 
-    // Создание пользователя
-    // @ApiOperation({summary: "Создание пользователя"})
-    // @ApiResponse({status: 200, type: User})
-    // @Post()
-    // create(@Body() userDto: CreateUserDTO){
-    //     return this.authService.registration(userDto);
-    // }
-
-    // Получение всех пользователей. Возвращает массив пользователей
     @ApiOperation({summary: "Получение всех пользователей"})
     @ApiResponse({status: 200, type: [User]})
     // @Roles("ADMIN")
@@ -38,31 +32,35 @@ export class UsersController {
         return this.usersService.getAllUsers();
     }
 
-
-    // Возвращение пользователя по его почте
-    @ApiOperation({summary: "Получение пользователя по почте"})
+    @ApiOperation({summary: "Получение личного профиля пользователя  по его accesToken"})
     @ApiResponse({status: 200, type: User})
-    // @Roles("ADMIN")
-    // @UseGuards(RolesGuard)
-    // @UseGuards(JwtAuthGuard)
-    @Get('/user')
-    get(@Body() dto: GetUserDto){
-        return this.usersService.getUserByEmail(dto.email);    
-    }
-
-    // Возвращение пользователя по его почте
-    @ApiOperation({summary: "Получение пользователя по его accesToken"})
-    @ApiResponse({status: 200, type: User})
-    // @Roles("ADMIN")
-    // @UseGuards(RolesGuard)
-    // @UseGuards(JwtAuthGuard)
+    @ApiResponse({status: 401, type: UnauthorizedResponse})
+    @UnauthorizedApiResponse()
+    @UseGuards(JwtAuthGuard)
     @Get('/myProfile')
     getMyProfile(@Headers("authorization") authHeader: string){
-        return true;
+        return this.usersService.getMyProfile(authHeader);
     }
 
+    // @ApiOperation({summary: "Блокировка пользователя"})
+    // @ApiResponse({status: 200})
+    // @Roles("ADMIN")
+    // @UseGuards(RolesGuard)
+    // @UseGuards(JwtAuthGuard)
+    // @Post('/ban')
+    // banUser(@Body() dto: UserBanDto){
+    //     return this.usersService.banUser(dto);    
+    // }
 
-    // // Удаляет пользователя по его почте
+     // Создание пользователя
+    // @ApiOperation({summary: "Создание пользователя"})
+    // @ApiResponse({status: 200, type: User})
+    // @Post()
+    // create(@Body() userDto: CreateUserDTO){
+    //     return this.authService.registration(userDto);
+    // }
+
+        // // Удаляет пользователя по его почте
     // @ApiOperation({summary: "Удаление пользователя по почте"})
     // @ApiResponse({status: 410, type: ""})
     // // @Roles("ADMIN")
@@ -73,35 +71,20 @@ export class UsersController {
     //     return this.usersService.deleteUserByEmail(dto.email);
     // }
 
-    // Выдача роли пользователю
-    @ApiOperation({summary: "Выдача роли пользователю"})
-    @ApiResponse({status: 200})
-    @Post('/role')
-    addRole(@Body() dto: AddRoleDto){
-        return this.usersService.addRoleToUser(dto);    
-    }
-
-    // // Забрать роль у пользователя
-    // @ApiOperation({summary: "Удаление роли у пользователя"})
+    // @ApiOperation({summary: "Выдача роли пользователю"})
     // @ApiResponse({status: 200})
-    // @Roles("ADMIN")
-    // @UseGuards(RolesGuard)
-    // @UseGuards(JwtAuthGuard)
-    // @Delete('/role')
-    // deleteRole(@Body() dto: AddRoleDto){
-    //     return this.usersService.deleteRoleFromUser(dto);    
+    // @Post('/role')
+    // addRole(@Body() dto: AddRoleDto){
+    //     return this.usersService.addRoleToUser(dto);    
     // }
 
-    
-    // Блокировка пользователя
-    @ApiOperation({summary: "Блокировка пользователя"})
-    @ApiResponse({status: 200})
-    @Roles("ADMIN")
-    @UseGuards(RolesGuard)
-    @UseGuards(JwtAuthGuard)
-    @Post('/ban')
-    banUser(@Body() dto: BanUserDto){
-        return this.usersService.banUser(dto);    
-    }
+    // Возвращение пользователя по его почте
+    // @ApiOperation({summary: "Получение пользователя по почте"})
+    // @ApiResponse({status: 200, type: User})
+    // @Get('/user')
+    // getOneByEmail(@Body() dto: GetUserDto){
+    //     return this.usersService.getUserByEmail(dto.email);    
+    // }
+
     
 }

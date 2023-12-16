@@ -1,24 +1,26 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './entities/users.model';
-import { CreateUserDTO } from './dto/create-user.dto';
+import { UserCreateDTO } from './dto/user-create.dto';
 import { RolesService } from 'src/role/roles.service';
-import { AddRoleDto } from './dto/add-role.dto';
-import { BanUserDto } from './dto/ban-user.dto';
-import { GetUserDto } from './dto/get-user.dto';
+import { RoleAddDto } from './dto/role-add.dto';
+import { UserBanDto } from './dto/user-ban.dto';
+import { UserGetDto } from './dto/user-get.dto';
 import { error } from 'console';
 import { Employee } from 'src/employee/entities/employee.model';
+import { AuthService } from 'src/auth/auth.service';
+import { JwtService } from '@nestjs/jwt';
 
 
 @Injectable()
 export class UsersService {
     
-    constructor(@InjectModel(User) private userRepository: typeof User, private roleService: RolesService) {
+    constructor(@InjectModel(User) private userRepository: typeof User, private roleService: RolesService, private jwtService: JwtService) {
 
     }
 
     // Создание пользователя по модели 
-    async createUser(dto: CreateUserDTO){
+    async createUser(dto: UserCreateDTO){
         try {
             const { role, ...updatedDto } = dto;
             const userRole = await this.roleService.getRoleByValue(dto.role);
@@ -26,11 +28,14 @@ export class UsersService {
             if(userRole.value  === "EMPLOYEE") {
                 const user = await this.userRepository.create(updatedDto);
                 // Добавляем роль пользователя в бд
-                await user.$set('roles', [userRole.id])
+                await user.$set('roles', [userRole.id]);
                 // Добавляем роль пользователю
                 user.roles = [userRole];
-                // Добалвяем связь пользователя с employee
-                await user.$create('employee', {userId: user.id})
+                // Добалвляем связь пользователя с employee
+                await user.$create('employee', {userId: user.id});
+                if (user.employer) {
+                    await user.$remove('employer', user.employer.id);
+                }
                 return user;
             } 
             else if (userRole.value  === "EMPLOYER") {
@@ -41,7 +46,6 @@ export class UsersService {
                 user.roles = [userRole];
                 // Добалвяем связь пользователя с employer
                 await user.$create('employer', {userId: user.id})
-
                 return user;
             }
             else {
@@ -50,8 +54,7 @@ export class UsersService {
 
         } catch (error){
             throw new HttpException("Invalid data", HttpStatus.BAD_REQUEST);
-        }
-        
+        }   
     }
     
     async getAllUsers(){
@@ -64,6 +67,35 @@ export class UsersService {
         const user = await this.userRepository.findOne({where:{email: email}, include: {all: true}});
         return user;
     }
+    
+    async getMyProfile(authHeader: string) {
+        try {
+            const bearer = authHeader.split(' ')[0];
+            const accesToken = authHeader.split(' ')[1];
+            if (bearer !== "Bearer" || !accesToken) {
+                throw new HttpException(
+                    {status: HttpStatus.BAD_REQUEST, message: 'Недействительный access token',}
+                    , HttpStatus.BAD_REQUEST);
+            }
+            const decodedToken = this.jwtService.decode(accesToken);
+            
+            // Проверьте, имеет ли accesToken необходимые поля
+            if (decodedToken.email || decodedToken.id || decodedToken.roles) {
+                const user = await this.getUserByEmail(decodedToken.email);
+                return user
+            } else {
+                throw new HttpException(
+                    {status: HttpStatus.BAD_REQUEST, message: 'Недействительный access token',}
+                    , HttpStatus.BAD_REQUEST);
+            }
+
+        } catch(error) {
+            throw new HttpException(
+                    {status: HttpStatus.BAD_REQUEST, message: 'Недействительный access token',}
+                    , HttpStatus.BAD_REQUEST);
+        }
+    }
+
     
     async deleteUserByEmail(email: string){
         try {
@@ -79,7 +111,7 @@ export class UsersService {
         }
     }
 
-    async addRoleToUser(dto: AddRoleDto){
+    async addRoleToUser(dto: RoleAddDto){
         const user = await this.userRepository.findByPk(dto.userId);
         const role = await this.roleService.getRoleByValue(dto.value);
 
@@ -107,7 +139,8 @@ export class UsersService {
     
 
     // Блокировка пользователя
-    async banUser(dto: BanUserDto) {
+    
+    async banUser(dto: UserBanDto) {
         const user = await this.userRepository.findByPk(dto.userId);
         user.banned = true;
         user.banReason = dto.banReason;

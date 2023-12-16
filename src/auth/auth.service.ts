@@ -1,7 +1,7 @@
 import { ConflictException, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/sequelize';
-import { CreateUserDTO } from 'src/users/dto/create-user.dto';
+import { UserCreateDTO } from 'src/users/dto/user-create.dto';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcryptjs';
 import { LoginUserDto } from './dto/login-auth.dto';
@@ -21,7 +21,7 @@ export class AuthService {
         }
     }
 
-    async registration(userDto: CreateUserDTO){
+    async registration(userDto: UserCreateDTO){
         // Проверка наличия такого user в бдшке
         const candidate = await this.userService.getUserByEmail(userDto.email);
         if (candidate){
@@ -80,6 +80,9 @@ export class AuthService {
 
     private async validateUser(userDto: LoginUserDto) {
         const user = await this.userService.getUserByEmail(userDto.email); 
+        if (!user) {
+            throw new UnauthorizedException({message: "Некорректный email или пароль"});
+        }
         const passwordEquals = await bcrypt.compare(userDto.password, user.password);
         if (user && passwordEquals) {
             return user;
