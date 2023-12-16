@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDTO } from 'src/users/dto/create-user.dto';
@@ -25,7 +25,7 @@ export class AuthService {
         // Проверка наличия такого user в бдшке
         const candidate = await this.userService.getUserByEmail(userDto.email);
         if (candidate){
-            throw new HttpException("Пользователь с таким email существует", HttpStatus.BAD_REQUEST)
+            throw new ConflictException("Пользователь с таким email существует")
         }
         // Хэширование паспорта и создание пользователя
         const hashPassword = await bcrypt.hash(userDto.password, 5);
@@ -42,11 +42,11 @@ export class AuthService {
         try {
             const bearer = authHeader.split(' ')[0];
             const refreshToken = authHeader.split(' ')[1];
-
             if (bearer !== "Bearer" || !refreshToken) {
-                throw new UnauthorizedException("Invalid token")   
+                throw new HttpException(
+                    {status: HttpStatus.BAD_REQUEST, message: 'Неправильный refresh token',}
+                    , HttpStatus.BAD_REQUEST);
             }
-
             const decodedToken = this.jwtService.decode(refreshToken);
             
             // Проверьте, имеет ли RefreshToken необходимые поля
@@ -57,13 +57,13 @@ export class AuthService {
                 }
             } else {
                 throw new HttpException(
-                    {status: HttpStatus.BAD_REQUEST, message: 'Invalid refresh token',}
+                    {status: HttpStatus.BAD_REQUEST, message: 'Неправильный refresh token',}
                     , HttpStatus.BAD_REQUEST);
             }
 
         } catch(error) {
             throw new HttpException(
-                    {status: HttpStatus.BAD_REQUEST, message: 'Invalid refresh token',}
+                    {status: HttpStatus.BAD_REQUEST, message: 'Неправильный refresh token',}
                     , HttpStatus.BAD_REQUEST);
         }
     }
@@ -77,8 +77,6 @@ export class AuthService {
         const payload = {tokenType: "refreshToken", email: user.email, id: user.id}
         return this.jwtService.sign(payload, { expiresIn: '7d' }); 
     }
-
-
 
     private async validateUser(userDto: LoginUserDto) {
         const user = await this.userService.getUserByEmail(userDto.email); 

@@ -4,9 +4,10 @@ import { CreateUserDTO } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-auth.dto';
 import { ValidationPipe } from 'src/pipes/validation.pipe';
-import { LoginTokensDto } from './dto/login-tokens.dto';
+import { LoginResponseDto, LoginResponseUnauthorizedDto } from './dto/login-responses.dto';
 import { TokenClass } from 'typescript';
-import { RefreshAccessTokenResponse } from './dto/refreshAccessToken-response.dto';
+import { RefreshAccessTokenBadRequstResponse, RefreshAccessTokenResponse } from './dto/refreshAccessToken-responses.dto';
+import { RegistationResponseBadRequstDto, RegistationResponseConflictDto, RegistationResponseDto } from './dto/registration-responses.dto';
 
 
 @ApiTags("Авторизация")
@@ -15,14 +16,17 @@ export class AuthController {
     constructor(private authService: AuthService){}
 
     @ApiOperation({summary: "Авторизация пользователя"})
-    @ApiResponse({status: 200, type: LoginTokensDto})
+    @ApiResponse({status: 200, type: LoginResponseDto})
+    @ApiResponse({status: 401, type: LoginResponseUnauthorizedDto})
     @Post('/login')
     login(@Body() userDto: LoginUserDto){
         return this.authService.login(userDto);
     }
 
     @ApiOperation({summary: "Регистрация пользователя"})
-    @ApiResponse({status: 200, type: LoginTokensDto})
+    @ApiResponse({status: 200, type: RegistationResponseDto})
+    @ApiResponse({status: 400, type: RegistationResponseBadRequstDto})
+    @ApiResponse({status: 409, type: RegistationResponseConflictDto})
     @Post('/registration')
     registration(@Body() userDto: CreateUserDTO){
         return this.authService.registration(userDto);
@@ -31,6 +35,7 @@ export class AuthController {
 
     @ApiOperation({summary: "Обновление accesToken"})
     @ApiResponse({status: 200, type: RefreshAccessTokenResponse })
+    @ApiResponse({status: 400, type: RefreshAccessTokenBadRequstResponse})
     @Post('/refresh-accessToken')
     refreshAccesToken(@Headers("authorization") authHeader: string){
         return this.authService.refreshAccessToken(authHeader);
