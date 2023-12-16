@@ -78,12 +78,12 @@ export class User extends Model<User, UserCreationAttrs> {
     @BelongsToMany( ()=> Role, ()=> UserRoles)
     roles: Role[]
 
-    @HasMany( () => Vacancy)
+    @HasMany( () => Vacancy, { onDelete: 'CASCADE' })
     vacancies: Vacancy[]
 
-    @HasOne( ()=> Employee)
+    @HasOne( ()=> Employee, { onDelete: 'CASCADE' })
     employee: Employee
 
-    @HasOne( ()=> Employer)
+    @HasOne( ()=> Employer, { onDelete: 'CASCADE' })
     employer: Employer
 }

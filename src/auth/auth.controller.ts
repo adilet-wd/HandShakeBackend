@@ -1,6 +1,6 @@
 import { Body, Controller, Headers, Post, UsePipes } from '@nestjs/common';
 import { ApiResponse, ApiOperation,  ApiTags } from '@nestjs/swagger';
-import { CreateUserDTO } from 'src/users/dto/create-user.dto';
+import { UserCreateDTO } from 'src/users/dto/user-create.dto';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-auth.dto';
 import { ValidationPipe } from 'src/pipes/validation.pipe';
@@ -28,7 +28,7 @@ export class AuthController {
     @ApiResponse({status: 400, type: RegistationResponseBadRequstDto})
     @ApiResponse({status: 409, type: RegistationResponseConflictDto})
     @Post('/registration')
-    registration(@Body() userDto: CreateUserDTO){
+    registration(@Body() userDto: UserCreateDTO){
         return this.authService.registration(userDto);
     }
     // Проверка
