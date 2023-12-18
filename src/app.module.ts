@@ -14,10 +14,10 @@ import { VacanciesController } from './vacancies/vacancies.controller';
 import { VacanciesModule } from './vacancies/vacancies.module';
 import { VacanciesService } from './vacancies/vacancies.service';
 import { Vacancy } from "./vacancies/vacancies.model";
-import { EmployeeModule } from "./employee/employee.module";
-import { Employee } from "./employee/entities/employee.model";
-import { EmployerModule } from './employer/employer.module';
-import { Employer } from "./employer/entities/employer.model";
+import { EmployeesModule } from "./employee/employees.module";
+import { Employee } from "./employee/entities/employees.model";
+import { EmployerModule } from './employer/employers.module';
+import { Employer } from "./employer/entities/employers.model";
  
 @Module({
     controllers: [], 
@@ -41,7 +41,7 @@ import { Employer } from "./employer/entities/employer.model";
         RolesModule,
         AuthModule,
         VacanciesModule,
-        EmployeeModule,
+        EmployeesModule,
         EmployerModule,
       ],
 })

@@ -1,26 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateEmployeeDto } from './dto/employee-create.dto';
 import { EmployeeUpdateDto } from './dto/employee-update.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
-export class EmployeeService {
+export class EmployeesService {
   constructor( private userService: UsersService) {
   }
 
-  create(createEmployeeDto: CreateEmployeeDto) {
-    return 'This action adds a new employee';
-  }
-
-  findAll() {
-    return `This action returns all employee`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} employee`;
-  }
-
+  // Изменение данных о работнике по его accesToken
   async update(updateHeader: string, updateEmployeeDto: EmployeeUpdateDto) {
     try {
       const result = await this.userService.validateAccesToken(updateHeader);
@@ -33,7 +21,7 @@ export class EmployeeService {
             'dateOfBirth': new Date(updateEmployeeDto.dateOfBirth),
             'gender': updateEmployeeDto.gender,
           });
-          return user;
+          return {"message": "Данные пользователя успешно обновлены"};
         } else {
           throw new HttpException(
               {status: HttpStatus.BAD_REQUEST, message: 'Недействительный access token',}
@@ -49,9 +37,5 @@ export class EmployeeService {
                 {status: HttpStatus.BAD_REQUEST, message: `Недействительный access token`,}
                 , HttpStatus.BAD_REQUEST);
     }
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} employee`;
   }
 }

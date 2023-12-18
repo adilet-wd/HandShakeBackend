@@ -1,6 +1,5 @@
-import { Body, Headers, Controller, Post, Get, Put, Delete, Param, UseGuards, UsePipes } from '@nestjs/common';
+import { Body, Headers, Controller, Post, Get, Put, Delete, Param, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UserCreateDTO } from './dto/user-create.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from './entities/users.model';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -9,10 +8,7 @@ import { RolesGuard } from 'src/auth/roles-auth.guard';
 import { RoleAddDto } from './dto/role-add.dto';
 import { UserBanDto } from './dto/user-ban.dto';
 import { UserGetDto } from './dto/user-get.dto';
-import { ValidationPipe } from 'src/pipes/validation.pipe';
 import { AuthService } from 'src/auth/auth.service';
-import { MyProfileUnauthorizedResponse } from './dto/myProfle-responses.dto';
-import { UnauthorizedResponse } from '../dto/unauthorized-response.dto';
 import { UnauthorizedApiResponse } from 'src/decorators/unauthorized.decorator';
 
 

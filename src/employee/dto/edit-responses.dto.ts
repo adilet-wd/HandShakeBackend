@@ -6,10 +6,10 @@ export class EditResponseDto {
 }
 
 export class EditBadRequestResponseDto {
-    @ApiProperty({example: "Должно быть строкой. Место обучения не должно быть пустым", description: "Требования к месту обучения"})
+    @ApiProperty({example: "Должно быть строкой.Не меньше 1 символа и не длинее 70. Место обучения не должно быть пустым", description: "Требования к месту обучения."})
     readonly studyLocation: string;
-    @ApiProperty({example: "Неправильная дата рождения(Должно быть старше 16, младше 120). Неправильный формат даты. Дата рождения не должна быть пустой. Формат даты YYYY-MM-DD", description: "Требования к дате рождения"})
+    @ApiProperty({example: "Неправильная дата рождения(Должно быть старше 16, младше 120). Неправильный формат даты. Дата рождения не должна быть пустой. Формат даты YYYY-MM-DD", description: "Требования к дате рождения."})
     readonly dateOfBirth: string;
-    @ApiProperty({example: "Должно быть либо MALE либо FEMALE. Пол не должен быть пустым", description: "Требования к полу"})
+    @ApiProperty({example: "Должно быть либо MALE либо FEMALE. Пол не должен быть пустым", description: "Требования к полу."})
     readonly gender: string;
 }

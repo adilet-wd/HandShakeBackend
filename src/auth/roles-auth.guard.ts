@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable, UnauthorizedException } from "@nestjs/common";
+import { CanActivate, ExecutionContext, ForbiddenException, HttpException, HttpStatus, Injectable, UnauthorizedException } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
 import { Observable } from "rxjs";
@@ -34,7 +34,7 @@ export class RolesGuard implements CanActivate {
 
             // Проверка типа токена
             if (bearer !== "Bearer" || !token) {
-                throw new HttpException("Нет доступа", HttpStatus.FORBIDDEN)
+                throw new ForbiddenException({message: "Нет доступа"})
             }
 
             // Верификация токена
@@ -42,10 +42,14 @@ export class RolesGuard implements CanActivate {
             req.user = user;
 
             // Результат проверки роли пользователя
-            return user.roles.some(role => requiredRoles.includes(role.value));
+            if (user.roles.some(role => requiredRoles.includes(role.value))) {
+                return true;
+            } else {
+                throw new ForbiddenException({message: "Нет доступа"})
+            }
 
         } catch(e) {
-            throw new HttpException("Нет доступа", HttpStatus.FORBIDDEN)
+            throw new ForbiddenException({message: "Нет доступа"})
         }
     }
     

@@ -1,6 +1,7 @@
 import { ValidationOptions, ValidatorConstraint,ValidatorConstraintInterface, registerDecorator} from 'class-validator';
   
 @ValidatorConstraint({ name: 'isValidBirthdate', async: false })
+
   export class IsValidBirthdateConstraint implements ValidatorConstraintInterface {
     validate(value: string) {
         const dateOfBirth = new Date(value);
