@@ -158,7 +158,7 @@ module.exports = {
         allowNull: true,
       },
       gender: {
-        type: Sequelize.ENUM("male", "female"),
+        type: Sequelize.ENUM("MALE", "FEMALE"),
         allowNull: true,
       },
     });

@@ -36,7 +36,6 @@ export class AuthService {
         }
     }
 
-
     async refreshAccessToken(authHeader: string) {
     
         try {
@@ -67,10 +66,10 @@ export class AuthService {
                     , HttpStatus.BAD_REQUEST);
         }
     }
-    
+
     private async generateAccessToken(user) {
         const payload = {tokenType: "accessToken", email: user.email, id: user.id, roles: user.roles}
-        return this.jwtService.sign(payload, { expiresIn: '30s' }); 
+        return this.jwtService.sign(payload, { expiresIn: '3m' }); 
     }
 
     private async generateRefreshToken(user) {

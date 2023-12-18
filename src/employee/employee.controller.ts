@@ -1,31 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Headers, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
-import { CreateEmployeeDto } from './dto/create-employee.dto';
-import { UpdateEmployeeDto } from './dto/update-employee.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { CreateEmployeeDto } from './dto/employee-create.dto';
+import { EmployeeUpdateDto } from './dto/employee-update.dto';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UnauthorizedApiResponse } from 'src/decorators/unauthorized.decorator';
+import { EditBadRequestResponseDto, EditResponseDto } from './dto/edit-responses.dto';
 
 @ApiTags('Работники')
 @Controller('employee')
 export class EmployeeController {
-  constructor(private readonly employeeService: EmployeeService) {}
+  constructor(private employeeService: EmployeeService) {}
 
-  @Get()
-  findAll() {
-    return this.employeeService.findAll();
+  @ApiOperation({summary: "Изменение данных о работнике"})
+  @ApiResponse({status: 200, type: EditResponseDto})
+  @ApiResponse({status: 400, type: EditBadRequestResponseDto})
+  @UnauthorizedApiResponse()
+  @Patch('/edit')
+  update(@Headers("authorization") updateHeader: string, @Body() updateEmployeeDto: EmployeeUpdateDto) {
+    return this.employeeService.update(updateHeader, updateEmployeeDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.employeeService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEmployeeDto: UpdateEmployeeDto) {
-    return this.employeeService.update(+id, updateEmployeeDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.employeeService.remove(+id);
-  }
 }

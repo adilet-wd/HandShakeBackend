@@ -34,7 +34,6 @@ export class UsersController {
 
     @ApiOperation({summary: "Получение личного профиля пользователя  по его accesToken"})
     @ApiResponse({status: 200, type: User})
-    @ApiResponse({status: 401, type: UnauthorizedResponse})
     @UnauthorizedApiResponse()
     @UseGuards(JwtAuthGuard)
     @Get('/myProfile')
