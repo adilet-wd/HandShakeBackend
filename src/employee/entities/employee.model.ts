@@ -9,6 +9,8 @@ import { EnumType } from "typescript";
     createdAt: false,
     updatedAt: false,
 })
+
+
 export class Employee extends Model<Employee> {
     
     @ApiProperty({example: "1", description: "Уникальный идентификатор, Primal Key"})
@@ -41,11 +43,11 @@ export class Employee extends Model<Employee> {
         unique: false,
         allowNull: true,
     })
-    dateOfBirth: DateOnlyDataType;
+    dateOfBirth: Date;
     
-    @ApiProperty({example: "male", description: "Пол"})
+    @ApiProperty({example: "MALE", description: "Пол"})
     @Column({
-        type: DataType.ENUM('male', 'female'),
+        type: DataType.ENUM('MALE', 'FEMALE'),
         unique: false,
         allowNull: true,
     })

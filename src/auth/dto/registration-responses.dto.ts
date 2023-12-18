@@ -7,7 +7,7 @@ export class RegistationResponseDto {
     readonly refreshToken: string;
 }
 
-export class RegistationResponseBadRequstDto {
+export class RegistationResponseBadRequestDto {
     @ApiProperty({example: "Не меньше 1 символа и не длинее 16. Должно быть строкой", description: "Требования к имени"})
     readonly name: string;
     @ApiProperty({example: "Не меньше 1 символа и не длинее 20. Должно быть строкой", description: "Требования к фамилии"})
