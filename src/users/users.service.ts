@@ -8,6 +8,8 @@ import { UserBanDto } from './dto/user-ban.dto';
 import { UserGetDto } from './dto/user-get.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
+import { Employer } from 'src/employer/entities/employers.model';
+import { Vacancy } from 'src/vacancies/entities/vacancies.model';
 
 interface ValidationResult {
     validated: boolean;
@@ -33,21 +35,18 @@ export class UsersService {
                 await user.$set('roles', [userRole.id]);
                 // Добавляем роль пользователю
                 user.roles = [userRole];
-                // Добалвляем связь пользователя с employee
+                // Добавляем связь пользователя с employee
                 await user.$create('employee', {userId: user.id});
-                if (user.employer) {
-                    await user.$remove('employer', user.employer.id);
-                }
                 return user;
             } 
             else if (userRole.value  === "EMPLOYER") {
                 const user = await this.userRepository.create(updatedDto);
                 // Добавляем роль пользователя в бд
-                await user.$set('roles', [userRole.id])
+                await user.$set('roles', [userRole.id]);
                 // Добавляем роль пользователю
                 user.roles = [userRole];
-                // Добалвяем связь пользователя с employer
-                await user.$create('employer', {userId: user.id})
+                // Добавляем связь пользователя с employer
+                await user.$create('employer', {userId: user.id});
                 return user;
             }
             else {
@@ -61,14 +60,31 @@ export class UsersService {
     
     // Возвращает массив пользователей со всеми связями
     async getAllUsers(){
-        const users = await this.userRepository.findAll({include: {all: true}});
+        const users = await this.userRepository.findAll({
+            include: [
+                {
+                    model: Employer,
+                    include: [Vacancy]
+                },
+                { all: true }, 
+            ],
+        });
         return users;
     }
 
     // Получение пользователя по его почте(уникальная почта)
     // Возвращает пользователя со всеми его связями
     async getUserByEmail(email: string) {
-        const user = await this.userRepository.findOne({where:{email: email}, include: {all: true}});
+        const user = await this.userRepository.findOne({
+            where: { email: email },
+            include: [
+                {
+                    model: Employer,
+                    include: [Vacancy]
+                },
+                { all: true }, 
+            ],
+        });
         return user;
     }
 

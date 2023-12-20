@@ -1,8 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { DateOnlyDataType } from "sequelize";
-import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
+import { AfterCreate, BeforeCreate, BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
 import { User } from "src/users/entities/users.model";
-import { EnumType } from "typescript";
+import { Vacancy } from "src/vacancies/entities/vacancies.model";
 
 @Table({
     tableName: 'employers',
@@ -45,7 +44,7 @@ export class Employer extends Model<Employer> {
     
     @ApiProperty({example: "Компания MBank - банковская сфера", description: "Описание компании"})
     @Column({
-        type: DataType.STRING,
+        type: DataType.TEXT,
         unique: false,
         allowNull: true,
     })
@@ -53,4 +52,8 @@ export class Employer extends Model<Employer> {
 
     @BelongsTo(()=> User)
     user: User
+
+    @HasMany( () => Vacancy, { onDelete: 'CASCADE' })
+    vacancies: Vacancy[];
+
 }
