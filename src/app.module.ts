@@ -13,7 +13,7 @@ import { AuthModule } from './auth/auth.module';
 import { VacanciesController } from './vacancies/vacancies.controller';
 import { VacanciesModule } from './vacancies/vacancies.module';
 import { VacanciesService } from './vacancies/vacancies.service';
-import { Vacancy } from "./vacancies/vacancies.model";
+import { Vacancy } from "./vacancies/entities/vacancies.model";
 import { EmployeesModule } from "./employee/employees.module";
 import { Employee } from "./employee/entities/employees.model";
 import { EmployerModule } from './employer/employers.module';

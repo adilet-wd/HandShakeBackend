@@ -100,40 +100,6 @@ module.exports = {
       },
     });
 
-    await queryInterface.createTable('vacancies', {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER,
-      },
-      content: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      workMode: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      userId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'users',
-          key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
-      },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
-    });
-
     await queryInterface.createTable('employees', {
       id: {
         type: Sequelize.INTEGER,
@@ -179,7 +145,7 @@ module.exports = {
         allowNull: false,
       },
       companyName: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       location: {
@@ -192,6 +158,52 @@ module.exports = {
       },
     });
 
+    await queryInterface.createTable('vacancies', {
+      id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        unique: true,
+      },
+      employerId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'employers',
+          key: 'id',
+        },
+        allowNull: false,
+      },
+      title: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      content: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
+      duties: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
+      requirements: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
+      workMode: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.fn('now'),
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.fn('now'),
+      },
+    });
 
     await queryInterface.bulkInsert('roles', [
       {

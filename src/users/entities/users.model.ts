@@ -4,21 +4,13 @@ import { Employee } from "src/employee/entities/employees.model";
 import { Employer } from "src/employer/entities/employers.model";
 import { Role } from "src/role/entities/roles.model";
 import { UserRoles } from "src/role/entities/user-roles.model";
-import { Vacancy } from "src/vacancies/vacancies.model";
-
-
-interface UserCreationAttrs {
-    email: string;
-    password: string;
-    name: string;
-    username: string;
-}
+import { Vacancy } from "src/vacancies/entities/vacancies.model";
 
 
 @Table({
     tableName: 'users'
 })
-export class User extends Model<User, UserCreationAttrs> {
+export class User extends Model<User> {
 
     @ApiProperty({example: "1", description: "Уникальный идентификатор, Primary Key"})
     @Column({
@@ -29,7 +21,7 @@ export class User extends Model<User, UserCreationAttrs> {
     })
     id: number;
     
-    @ApiProperty({example: "Бексултан", description: "Имя"})
+    @ApiProperty({example: "Adilet", description: "Имя"})
     @Column({
         type: DataType.STRING,
         unique: false,
@@ -37,7 +29,7 @@ export class User extends Model<User, UserCreationAttrs> {
     })
     name: string;
 
-    @ApiProperty({example: "Касымбеков", description: "Фамилия"})
+    @ApiProperty({example: "Usenkanov", description: "Фамилия"})
     @Column({
         type: DataType.STRING,
         unique: false,
@@ -78,12 +70,11 @@ export class User extends Model<User, UserCreationAttrs> {
     @BelongsToMany( ()=> Role, ()=> UserRoles)
     roles: Role[]
 
-    @HasMany( () => Vacancy, { onDelete: 'CASCADE' })
-    vacancies: Vacancy[]
-
     @HasOne( ()=> Employee, { onDelete: 'CASCADE' })
     employee: Employee
 
     @HasOne( ()=> Employer, { onDelete: 'CASCADE' })
     employer: Employer
+
+
 }

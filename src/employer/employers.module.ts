@@ -6,6 +6,7 @@ import { User } from 'src/users/entities/users.model';
 import { Employer } from './entities/employers.model';
 import { UsersModule } from 'src/users/users.module';
 import { AuthModule } from 'src/auth/auth.module';
+import { Vacancy } from 'src/vacancies/entities/vacancies.model';
 
 @Module({
   providers: [EmployersService],
@@ -13,7 +14,7 @@ import { AuthModule } from 'src/auth/auth.module';
   imports: [
     UsersModule,
     AuthModule,
-    SequelizeModule.forFeature([Employer, User]),
+    SequelizeModule.forFeature([Employer, User, Vacancy]),
   ],
   exports: [
   ]
