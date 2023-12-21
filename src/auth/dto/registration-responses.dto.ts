@@ -7,7 +7,7 @@ export class RegistationResponseDto {
     readonly refreshToken: string;
 }
 
-export class RegistationResponseBadRequestDto {
+export class RegistationBadRequestResponseDto {
     @ApiProperty({example: "Не меньше 1 символа и не длинее 16. Должно быть строкой", description: "Требования к имени"})
     readonly name: string;
     @ApiProperty({example: "Не меньше 1 символа и не длинее 20. Должно быть строкой", description: "Требования к фамилии"})
@@ -19,7 +19,7 @@ export class RegistationResponseBadRequestDto {
     @ApiProperty({example: "Должно быть либо EMPLOYEE либо EMPLOYER", description: "Требования к роли пользователя на сервисе"})
     readonly role: string;
 }
-export class RegistationResponseConflictDto {
+export class RegistationConflictResponseDto {
     @ApiProperty({example: "Пользователь с таким email существует", description: "Доступен ли этот email для регистрации"})
     readonly message: string;
 }

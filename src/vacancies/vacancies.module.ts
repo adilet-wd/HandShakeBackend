@@ -7,6 +7,9 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { UsersModule } from 'src/users/users.module';
 import { Employer } from 'src/employer/entities/employers.model';
 import { AuthModule } from 'src/auth/auth.module';
+import { EmployeesModule } from 'src/employee/employees.module';
+import { EmployersModule } from 'src/employer/employers.module';
+import { ApplicatedVacancy } from './entities/applicated_vacancies.model';
 
 @Module({
   providers: [VacanciesService],
@@ -14,7 +17,9 @@ import { AuthModule } from 'src/auth/auth.module';
   imports: [
       UsersModule,
       AuthModule,
-      SequelizeModule.forFeature([Vacancy, Employer]),
+      EmployeesModule,
+      EmployersModule,
+      SequelizeModule.forFeature([Vacancy, ApplicatedVacancy]),
     ],
 })
 export class VacanciesModule {}

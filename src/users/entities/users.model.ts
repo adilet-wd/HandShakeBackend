@@ -3,7 +3,7 @@ import { BelongsToMany, Column, DataType, HasMany, HasOne, Model, Table } from "
 import { Employee } from "src/employee/entities/employees.model";
 import { Employer } from "src/employer/entities/employers.model";
 import { Role } from "src/role/entities/roles.model";
-import { UserRoles } from "src/role/entities/user-roles.model";
+import { UserRoles } from "src/role/entities/user_roles.model";
 import { Vacancy } from "src/vacancies/entities/vacancies.model";
 
 

@@ -10,6 +10,8 @@ import { AuthService } from 'src/auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { Employer } from 'src/employer/entities/employers.model';
 import { Vacancy } from 'src/vacancies/entities/vacancies.model';
+import { Employee } from 'src/employee/entities/employees.model';
+import { ApplicatedVacancy } from 'src/vacancies/entities/applicated_vacancies.model';
 
 interface ValidationResult {
     validated: boolean;
@@ -66,6 +68,10 @@ export class UsersService {
                     model: Employer,
                     include: [Vacancy]
                 },
+                {
+                    model: Employee,
+                    include: [ApplicatedVacancy]
+                },
                 { all: true }, 
             ],
         });
@@ -81,6 +87,10 @@ export class UsersService {
                 {
                     model: Employer,
                     include: [Vacancy]
+                },
+                {
+                    model: Employee,
+                    include: [ApplicatedVacancy]
                 },
                 { all: true }, 
             ],

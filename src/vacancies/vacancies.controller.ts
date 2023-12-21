@@ -9,6 +9,8 @@ import { RolesGuard } from 'src/auth/roles-auth.guard';
 import { ForbiddenApiResponse } from 'src/decorators/forbidden-response.decorator';
 import { UnauthorizedApiResponse } from 'src/decorators/unauthorized.decorator';
 import { CreateResponseDto, CreateBadRequestResponseDto } from './dto/create-responses.dto';
+import { VacancySubscribeDto } from './dto/vacancy-subscribe.dto';
+import { SubscribeBadRequestResponseDto, SubscribeConflictResponseDto, SubscribeNotAcceptableResponseDto, SubscribeResponseDto } from './dto/subscribe-responses.dto';
 
 
 @ApiTags("Вакансии")
@@ -28,5 +30,20 @@ export class VacanciesController {
     @Post("/create")
     create(@Headers("authorization") createHeader: string, @Body() createVacancyDto: VacancyCreateDto){
         return this.vacanciesService.createVacancy(createHeader,createVacancyDto);
+    }
+
+    @ApiOperation({summary: "Подписка на вакансию"})
+    @ApiResponse({status: 200, type: SubscribeResponseDto})
+    @ApiResponse({status: 400, type: SubscribeBadRequestResponseDto})
+    @ApiResponse({status: 406, type: SubscribeNotAcceptableResponseDto})
+    @ApiResponse({status: 409, type: SubscribeConflictResponseDto})
+    @UnauthorizedApiResponse()
+    @ForbiddenApiResponse()
+    @Roles("EMPLOYEE")
+    @UseGuards(RolesGuard)
+    @UseGuards(JwtAuthGuard)
+    @Post("/subscribeToVacancy")
+    sunscribe(@Headers("authorization") subscribeHeader: string, @Body() subscribeVacancyDto: VacancySubscribeDto){
+        return this.vacanciesService.subscribeToVacancy(subscribeHeader, subscribeVacancyDto);
     }
 }

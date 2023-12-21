@@ -205,6 +205,31 @@ module.exports = {
       },
     });
 
+    await queryInterface.createTable('applicated_vacancies', {
+      id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        unique: true,
+      },
+      vacancyId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'vacancies',
+          key: 'id',
+        },
+      },
+      employeeId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'employees',
+          key: 'id',
+        },
+      },
+    });
+
     await queryInterface.bulkInsert('roles', [
       {
         value: 'ADMIN',

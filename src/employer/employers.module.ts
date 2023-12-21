@@ -17,6 +17,7 @@ import { Vacancy } from 'src/vacancies/entities/vacancies.model';
     SequelizeModule.forFeature([Employer, User, Vacancy]),
   ],
   exports: [
+    EmployersService
   ]
 })
-export class EmployerModule {}
+export class EmployersModule {}
