@@ -2,10 +2,12 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { EmployeeUpdateDto } from './dto/employee-update.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
+import { Employee } from './entities/employees.model';
+import { InjectModel } from '@nestjs/sequelize';
 
 @Injectable()
 export class EmployeesService {
-  constructor( private userService: UsersService) {
+  constructor( @InjectModel(Employee) private employeeRepository: typeof Employee, private userService: UsersService) {
   }
 
   // Изменение данных о работнике по его accesToken
@@ -38,4 +40,15 @@ export class EmployeesService {
                 , HttpStatus.BAD_REQUEST);
     }
   }
+
+  // Получение работника по его почте(уникальная почта)
+    // Возвращает работодателя со всеми его связями
+    async getEmployeeByEmail(email: string) {
+      const user = await this.userService.getUserByEmail(email);
+      const employee = await this.employeeRepository.findOne({
+          where: { userId: user.id },
+          include:{ all: true }, 
+      });
+      return employee;
+    }
 }

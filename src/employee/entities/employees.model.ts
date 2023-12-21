@@ -2,6 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { DateOnlyDataType } from "sequelize";
 import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
 import { User } from "src/users/entities/users.model";
+import { ApplicatedVacancy } from "src/vacancies/entities/applicated_vacancies.model";
 import { EnumType } from "typescript";
 
 @Table({
@@ -55,4 +56,7 @@ export class Employee extends Model<Employee> {
 
     @BelongsTo(()=> User)
     user: User
+
+    @HasMany(() => ApplicatedVacancy, { onDelete: 'CASCADE' })
+    applicatedVacancies: ApplicatedVacancy[];
 }

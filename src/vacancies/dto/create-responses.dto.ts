@@ -3,6 +3,8 @@ import { ApiProperty } from "@nestjs/swagger";
 export class CreateResponseDto {
     @ApiProperty({example: "Вакансия успешно создана", description: "Создалась ли вакансия"})
     readonly message: string;
+    @ApiProperty({example: "1", description: "id вакансии"})
+    readonly id: string;
 }
 
 export class CreateBadRequestResponseDto {

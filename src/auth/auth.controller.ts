@@ -7,7 +7,7 @@ import { ValidationPipe } from 'src/pipes/validation.pipe';
 import { LoginResponseDto, LoginResponseUnauthorizedDto } from './dto/login-responses.dto';
 import { TokenClass } from 'typescript';
 import { RefreshAccessTokenBadRequstResponse, RefreshAccessTokenResponse } from './dto/refreshAccessToken-responses.dto';
-import { RegistationResponseBadRequestDto, RegistationResponseConflictDto, RegistationResponseDto } from './dto/registration-responses.dto';
+import { RegistationBadRequestResponseDto, RegistationConflictResponseDto, RegistationResponseDto } from './dto/registration-responses.dto';
 
 
 @ApiTags("Авторизация")
@@ -25,8 +25,8 @@ export class AuthController {
 
     @ApiOperation({summary: "Регистрация пользователя"})
     @ApiResponse({status: 200, type: RegistationResponseDto})
-    @ApiResponse({status: 400, type: RegistationResponseBadRequestDto})
-    @ApiResponse({status: 409, type: RegistationResponseConflictDto})
+    @ApiResponse({status: 400, type: RegistationBadRequestResponseDto})
+    @ApiResponse({status: 409, type: RegistationConflictResponseDto})
     @Post('/registration')
     registration(@Body() userDto: UserCreateDTO){
         return this.authService.registration(userDto);

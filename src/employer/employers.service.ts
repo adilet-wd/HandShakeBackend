@@ -43,6 +43,6 @@ export class EmployersService {
         where: { userId: user.id },
         include:{ all: true }, 
     });
-    return user;
+    return employer;
 }
 }
